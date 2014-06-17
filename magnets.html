@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">  
+        
+        <style>
+            .squareStyle {
+               width: 50px;
+			   height: 50px; 
+               border: none; 
+               position: absolute; 
+               top: 50px; 
+               left: 50px;
+			   background:black;
+               cursor: pointer;
+            }
+        </style>
+    </head>
+	
+    <body>      		
+		<div>
+		<form name="myForm">
+			<input type="button" value="+" name="button" onClick="clickFirstButton()">
+		</form> 
+		
+		<script type="text/javascript">
+            var xInic, yInic;
+            var isPressed = false;
+			var cont = 0;
+			var array = [];// array with all the squares in the window
+			var colors = new Array("green", "purple", "teal", "violet", "pink"); //square colors	
+			
+			function clickFirstButton(){
+      	  
+			var canvas = document.createElement("square" + cont);
+			var randomNumber = Math.floor(Math.random()*5);
+			var color = colors[randomNumber]; //obtain the color of the square
+			canvas.setAttribute("id", "square"+cont);
+			 
+			cont = cont + 1; //change the id of the next square
+			 
+			canvas.className='squareStyle';
+			canvas.setAttribute("style", "background-color: " + color + ";");
+			document.body.appendChild(canvas);
+
+			array.push(canvas.id);
+			
+			//add the events for the new square
+			canvas.addEventListener("mousedown", function(e){mouseClick(e, canvas.id)}, false);
+			canvas.addEventListener("mouseup", function(e){mouseLeave(e, canvas.id)}, false);
+			canvas.addEventListener("mousemove", function(e){mouseMove(e, canvas.id)}, false);
+			
+			}
+			
+			function mouseClick(evt, name) { 
+				//get the initial position				
+				
+				xInic = evt.clientX;
+				yInic = evt.clientY;    
+				isPressed = true;
+			}
+			
+			function mouseMove(evt, name) {
+				if(isPressed) {
+					//calculate the position differences			
+					
+					var xActual = evt.clientX;
+					var yActual = evt.clientY;    
+					var xInc = xActual-xInic;
+					var yInc = yActual-yInic;
+					xInic = xActual;
+					yInic = yActual;
+					
+					//set the new position
+					var elemento = document.getElementById(name);
+					var position = getPosicion(elemento);
+					elemento.style.top = (position[0] + yInc) + "px";
+					elemento.style.left = (position[1] + xInc) + "px";
+				}
+			}
+			
+			function mouseLeave(evt, name) {
+			
+				isPressed = false;
+				
+				for(var i = 0; i <= array.length - 1 ; i++) {
+				var rect = array[i];
+				var element = document.getElementById(rect);
+				var position = getPosicion(element);
+				
+				
+				//if the squar is close of the other square
+				if ((rect != name) && ((position[0] - 60 <= evt.clientY && evt.clientY <= (position[0] + 60)) && (position[1] -60 <= evt.clientX && evt.clientX <= (position[1] + 60))) )
+					{(elem=document.getElementById(rect)).parentNode.removeChild(elem);
+					
+					array.splice( i, 1 );
+					}
+				}
+			}
+		   
+			function getPosicion(element) {
+				var position = new Array(2);
+				if(document.defaultView && document.defaultView.getComputedStyle) {
+					position[0] = parseInt(document.defaultView.getComputedStyle(element, null).getPropertyValue("top"))
+					position[1] = parseInt(document.defaultView.getComputedStyle(element, null).getPropertyValue("left"));
+				} else {
+					position[0] = parseInt(element.currentStyle.top);             
+					position[1] = parseInt(element.currentStyle.left);               
+				}      
+				return position;
+			}
+			
+        </script>
+        </div>
+    </body>
+</html>
